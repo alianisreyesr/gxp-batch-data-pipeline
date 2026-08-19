@@ -1,0 +1,16 @@
+version: 2
+models:
+  - name: stg_batch_telemetry
+    columns:
+      - name: record_key
+        tests: [not_null, unique]
+      - name: batch_id
+        tests: [not_null]
+      - name: timestamp_utc
+        tests: [not_null]
+  - name: fct_batch_quality
+    columns:
+      - name: batch_id
+        tests: [not_null, unique]
+      - name: telemetry_records
+        tests: [not_null]
