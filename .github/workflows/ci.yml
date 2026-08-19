@@ -19,26 +19,30 @@ jobs:
           cache: pip
       - name: Install dependencies
         run: python -m pip install -r requirements.txt
-      - name: Run Python tests
-        run: python -m pytest -q
-      - name: Generate synthetic telemetry
-        run: python -m src.generate_data --seed 42
-      - name: Validate and ingest to DuckDB
-        run: python -m src.ingest
-      - name: Run dbt models and tests
-        run: dbt build --project-dir dbt_project --profiles-dir dbt_project
-      - name: Emit explainable OOS evidence
+      - name: Run Python tests with coverage
+        run: python -m pytest -q --cov=src --cov-report=term-missing --cov-fail-under=80
+      - name: Run canonical evidence-producing pipeline
+        run: python -m src.pipeline --seed 42
+      - name: Assert deterministic run evidence
         run: |
           python - <<'PY'
-          import duckdb
-          from src.oos import evaluate_oos
+          import json
+          from pathlib import Path
 
-          con = duckdb.connect('warehouse/batch.duckdb')
-          cursor = con.execute('select * from raw_batch_telemetry')
-          columns = [item[0] for item in cursor.description]
-          rows = [dict(zip(columns, values)) for values in cursor.fetchall()]
-          con.close()
-          flags = evaluate_oos(rows)
-          assert flags, 'expected deterministic OOS examples'
-          print(flags[:5])
+          manifest = json.loads(Path('artifacts/run_manifest.json').read_text(encoding='utf-8'))
+          assert manifest['counts'] == {
+              'generated_rows': 96,
+              'accepted_rows': 96,
+              'rejected_rows': 0,
+              'oos_flags': 2,
+          }
+          assert manifest['oos_by_rule'] == {
+              'CPP-TEMP-001': 1,
+              'CQA-ASSAY-001': 1,
+          }
+          assert len(manifest['source_sha256']) == 64
+          assert manifest['run_id'] == f"run-{manifest['source_sha256'][:16]}"
+          print(json.dumps(manifest, indent=2, sort_keys=True))
           PY
+      - name: Run dbt models and tests
+        run: dbt build --project-dir dbt_project --profiles-dir dbt_project
