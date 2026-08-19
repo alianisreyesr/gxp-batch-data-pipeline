@@ -30,7 +30,7 @@ The implementation intentionally favors traceability and executable evidence ove
 
 ## Verified CI evidence
 
-GitHub Actions run **#5** completed successfully for this hardening branch with:
+The flagship-hardening GitHub Actions workflow completed successfully with:
 
 - **12 Python tests passed**;
 - **80.25% Python statement coverage** with an **80% CI gate**;
