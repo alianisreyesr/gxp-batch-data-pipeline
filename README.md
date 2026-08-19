@@ -2,13 +2,13 @@
 
 [![CI](https://github.com/alianisreyesr/gxp-batch-data-pipeline/actions/workflows/ci.yml/badge.svg)](https://github.com/alianisreyesr/gxp-batch-data-pipeline/actions/workflows/ci.yml)
 
-**Status: Active MVP** · Python · DuckDB · dbt · pytest · GitHub Actions
+**Status: Flagship hardening candidate** · Python · DuckDB · dbt · pytest · GitHub Actions
 
 > **Portfolio safety boundary:** all records, telemetry, identifiers, thresholds, and scenarios in this repository are fictional and synthetically generated. This is educational portfolio software, not validated GxP software, and it must not be used for manufacturing, release, quality, or patient-safety decisions.
 
 ## What this implements
 
-A small, reproducible batch-data pipeline that demonstrates the engineering path from raw synthetic process telemetry to tested analytical outputs:
+A traceable batch-data pipeline that produces durable run evidence from deterministic synthetic process telemetry:
 
 ```text
 synthetic telemetry
@@ -19,24 +19,77 @@ accepted rows ─────────────→ rejected rows + explici
       ↓
 DuckDB raw_batch_telemetry
       ↓
-dbt staging model
+explainable OOS evaluation ─→ artifacts/oos_evidence.json
       ↓
-fct_batch_quality
+run manifest ───────────────→ artifacts/run_manifest.json
       ↓
-explainable OOS evidence
+dbt staging + quality mart
 ```
 
-This MVP intentionally favors traceability and executable evidence over platform complexity.
+The implementation intentionally favors traceability and executable evidence over platform complexity.
 
-## Verified evidence
+## Verified CI evidence
 
-The first full GitHub Actions run passed end to end with:
+GitHub Actions run **#5** completed successfully for this hardening branch with:
 
-- **6 Python tests passed**;
+- **12 Python tests passed**;
+- **80.25% Python statement coverage** with an **80% CI gate**;
 - **96 synthetic telemetry rows generated**;
-- **96 accepted / 0 rejected** for the deterministic valid dataset;
-- **2 dbt models + 8 dbt data tests completed successfully**;
-- deterministic OOS evidence produced for `CPP-TEMP-001` and `CQA-ASSAY-001`.
+- **96 accepted / 0 rejected** for the deterministic default dataset;
+- **2 explainable OOS flags**: one `CPP-TEMP-001` and one `CQA-ASSAY-001`;
+- **2 dbt models + 8 dbt data tests**, all successful;
+- machine-readable run manifest with source SHA-256, deterministic run ID, configuration, counts, OOS summary, artifact paths, and safety boundary.
+
+For the verified default run, the source CSV SHA-256 was:
+
+```text
+b84c6c743b86d018c9ce02d2648049924fee7e607d0f29906c5408d77416cb03
+```
+
+and the deterministic run ID was:
+
+```text
+run-b84c6c743b86d018
+```
+
+## One-command pipeline
+
+After installing dependencies, the canonical execution path is:
+
+```bash
+python -m src.pipeline --seed 42
+```
+
+This command generates the synthetic source data, validates and quarantines records, loads accepted telemetry into DuckDB, evaluates OOS rules, persists OOS evidence, and writes the run manifest.
+
+To run the analytical transformation layer afterward:
+
+```bash
+dbt build --project-dir dbt_project --profiles-dir dbt_project
+```
+
+## Run evidence
+
+The pipeline writes runtime evidence under ignored local paths:
+
+```text
+data/synthetic/batch_telemetry.csv
+      └── SHA-256 recorded in manifest
+
+data/rejected/rejected_rows.csv
+      └── quarantined rows + explicit reasons
+
+warehouse/batch.duckdb
+      └── accepted telemetry and dbt models
+
+artifacts/oos_evidence.json
+      └── structured OOS flags
+
+artifacts/run_manifest.json
+      └── configuration, source hash, counts, OOS summary, artifact paths, safety boundary
+```
+
+The run ID is derived from the source CSV hash. The repository does **not** claim the DuckDB file itself is cryptographically reproducible.
 
 ## Implemented controls
 
@@ -44,25 +97,28 @@ The first full GitHub Actions run passed end to end with:
 - required-field, type, UTC timestamp, duplicate-key, monotonicity, and plausible-range validation;
 - explicit quarantine of rejected records with machine-readable reasons;
 - DuckDB persistence for accepted telemetry;
+- rule-based OOS flags with rule ID, observed value, expected range, batch, phase, and timestamp;
+- structured OOS JSON evidence;
+- source CSV SHA-256 evidence and deterministic run ID;
+- versioned run-manifest schema;
 - dbt staging and batch-quality mart models;
-- rule-based OOS flags that include rule ID, observed value, expected range, batch, phase, and timestamp;
-- pytest coverage for generation, quality gates, quarantine behavior, OOS explainability, and DuckDB persistence;
-- GitHub Actions gate that runs pytest, the pipeline, `dbt build`, and deterministic OOS evidence generation.
+- 12-test Python suite with measured statement coverage;
+- GitHub Actions gate using least-privilege `contents: read` permissions;
+- deterministic manifest assertions followed by `dbt build`.
 
-## Quick start
+## Quality gate vs. OOS rule
 
-```bash
-python -m venv .venv
-source .venv/bin/activate  # Windows: .venv\Scripts\activate
-python -m pip install -r requirements.txt
+The quality gate decides whether a record is structurally trustworthy enough to enter the analytical pipeline. OOS rules are narrower process-review rules. A record can therefore be **valid telemetry but still OOS**, keeping data-integrity validation separate from quality interpretation.
 
-python -m src.generate_data --seed 42
-python -m src.ingest
-dbt build --project-dir dbt_project --profiles-dir dbt_project
-python -m src.oos data/synthetic/batch_telemetry.csv
+Examples:
+
+```text
+invalid timestamp → quarantine
+missing pH        → quarantine
+999 °C            → quarantine
+39.2 °C           → accepted telemetry + CPP-TEMP-001 OOS flag
+87.5% assay       → accepted telemetry + CQA-ASSAY-001 OOS flag
 ```
-
-Generated runtime files are intentionally ignored by Git.
 
 ## Synthetic schema
 
@@ -78,37 +134,26 @@ Generated runtime files are intentionally ignored by Git.
 | `agitation_rpm` | Synthetic agitation rate |
 | `assay_pct` | Synthetic assay/CQA result |
 
-## Quality gate vs. OOS rule
-
-The quality gate checks whether a record is structurally trustworthy enough to enter the analytical pipeline. OOS rules are intentionally narrower process-review rules. A record can therefore be **valid telemetry but still OOS**, which keeps data-integrity validation separate from quality interpretation.
-
-Examples:
-
-```text
-invalid timestamp → quarantine
-missing pH        → quarantine
-999 °C            → quarantine
-39.2 °C           → accepted telemetry + CPP-TEMP-001 OOS flag
-87.5% assay       → accepted telemetry + CQA-ASSAY-001 OOS flag
-```
-
 ## Repository structure
 
 ```text
-src/                     synthetic generation, quality gates, ingestion, OOS rules
+src/                     generation, quality gates, ingestion, OOS rules, pipeline orchestration
 tests/                   pytest verification
 data/                     generated synthetic and rejected records (ignored)
 warehouse/                local DuckDB runtime database (ignored)
+artifacts/                generated manifest and OOS evidence (ignored)
 dbt_project/              dbt sources, staging, mart, and tests
 .github/workflows/ci.yml  automated quality gate
 ```
 
 ## Current limitations
 
-This MVP does **not** include authentication, electronic signatures, governed deployment, validated infrastructure, formal CSV evidence, production data connectors, streaming, ML prediction, or cloud/Kubernetes deployment. Those are deliberately out of scope until the executable baseline is stable.
+This project does **not** include authentication, electronic signatures, governed deployment, validated infrastructure, formal CSV evidence, production data connectors, streaming, ML prediction, or cloud/Kubernetes deployment. Those capabilities are deliberately out of scope for this portfolio milestone.
+
+Dependency versions remain bounded by compatible ranges rather than a fully locked environment. CI evidence therefore reflects the versions resolved in the verified run; future release hardening may add tighter dependency locking if needed.
 
 ## Portfolio objective
 
 This repository demonstrates one concise engineering story:
 
-**synthetic telemetry → explicit data-quality decisions → reproducible warehouse → tested transformations → explainable quality signals**.
+**synthetic telemetry → explicit data-quality decisions → traceable source evidence → reproducible analytical run metadata → tested transformations → explainable quality signals**.
