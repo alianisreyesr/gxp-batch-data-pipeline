@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/alianisreyesr/gxp-batch-data-pipeline/actions/workflows/ci.yml/badge.svg)](https://github.com/alianisreyesr/gxp-batch-data-pipeline/actions/workflows/ci.yml)
 
-**Status: MVP candidate** · Python · DuckDB · dbt · pytest · GitHub Actions
+**Status: Active MVP** · Python · DuckDB · dbt · pytest · GitHub Actions
 
 > **Portfolio safety boundary:** all records, telemetry, identifiers, thresholds, and scenarios in this repository are fictional and synthetically generated. This is educational portfolio software, not validated GxP software, and it must not be used for manufacturing, release, quality, or patient-safety decisions.
 
@@ -26,7 +26,17 @@ fct_batch_quality
 explainable OOS evidence
 ```
 
-This MVP candidate intentionally favors traceability and executable evidence over platform complexity.
+This MVP intentionally favors traceability and executable evidence over platform complexity.
+
+## Verified evidence
+
+The first full GitHub Actions run passed end to end with:
+
+- **6 Python tests passed**;
+- **96 synthetic telemetry rows generated**;
+- **96 accepted / 0 rejected** for the deterministic valid dataset;
+- **2 dbt models + 8 dbt data tests completed successfully**;
+- deterministic OOS evidence produced for `CPP-TEMP-001` and `CQA-ASSAY-001`.
 
 ## Implemented controls
 
