@@ -1,0 +1,7 @@
+gxp_batch_data_pipeline:
+  target: dev
+  outputs:
+    dev:
+      type: duckdb
+      path: warehouse/batch.duckdb
+      threads: 2
