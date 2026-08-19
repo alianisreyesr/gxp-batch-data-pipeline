@@ -1,0 +1,10 @@
+.venv/
+__pycache__/
+.pytest_cache/
+*.pyc
+warehouse/*.duckdb
+data/synthetic/*.csv
+data/rejected/*.csv
+dbt_project/target/
+dbt_project/logs/
+dbt_project/dbt_packages/

@@ -1,114 +1,114 @@
 # GxP Batch Manufacturing Data Pipeline
 
-<div align="center">
+[![CI](https://github.com/alianisreyesr/gxp-batch-data-pipeline/actions/workflows/ci.yml/badge.svg)](https://github.com/alianisreyesr/gxp-batch-data-pipeline/actions/workflows/ci.yml)
 
-[![Status](https://img.shields.io/badge/Status-Scaffold-0A66C2?style=flat-square)](https://github.com/alianisreyesr/gxp-batch-data-pipeline)
-[![Python](https://img.shields.io/badge/Python-3.11-3776AB?style=flat-square&logo=python&logoColor=white)](https://www.python.org/)
-[![DuckDB](https://img.shields.io/badge/DuckDB-OLAP-FFF000?style=flat-square&logo=duckdb&logoColor=black)](https://duckdb.org/)
-[![dbt](https://img.shields.io/badge/dbt-Core-FF694B?style=flat-square&logo=dbt&logoColor=white)](https://www.getdbt.com/)
-[![Great Expectations](https://img.shields.io/badge/Data_Quality-Great_Expectations-FF5A00?style=flat-square)](https://greatexpectations.io/)
-[![Compliance](https://img.shields.io/badge/GxP-21_CFR_Part_11_%2F_ALCOA%2B-2E7D32?style=flat-square)](docs/REGULATORY_CONTEXT.md)
+**Status: Active MVP** · Python · DuckDB · dbt · pytest · GitHub Actions
 
-**Pharmaceutical Batch Manufacturing ETL · Data Contracts · Critical Quality Attributes (CQA) · DuckDB & dbt**
+> **Portfolio safety boundary:** all records, telemetry, identifiers, thresholds, and scenarios in this repository are fictional and synthetically generated. This is educational portfolio software, not validated GxP software, and it must not be used for manufacturing, release, quality, or patient-safety decisions.
 
-*Portfolio-safe engineering prototype — 100% synthetic process telemetry*
+## What this implements
 
-[Architecture](#architecture--data-lineage) · [Data Quality Contracts](#data-quality-contracts--great-expectations) · [Regulatory Context](docs/REGULATORY_CONTEXT.md) · [Profile](https://github.com/alianisreyesr)
-
-</div>
-
----
-
-> **Portfolio Safety Boundary:** All batch records, sensor time-series, bioreactor telemetry, and lab assay values are synthetically generated. This system contains no proprietary or confidential manufacturing data and is built strictly for technical and educational demonstration.
-
----
-
-## Overview
-
-In pharmaceutical manufacturing, batch release decisions depend directly on data integrity, verifiable lineage, and strict enforcement of **Critical Process Parameters (CPPs)** and **Critical Quality Attributes (CQAs)**.
-
-This repository implements an end-to-end, reproducible modern data pipeline designed for regulated manufacturing analytics:
-
-1. **Synthetic Telemetry Generator:** Simulates multi-stage batch processing (Fermentation, Purification, Formulation, and Release Testing).
-2. **Data Contracts & Gateways (Great Expectations):** Enforces strict schema, nullability, range, and statistical distribution checks before loading into raw storage.
-3. **Dimensional Data Modeling (dbt + DuckDB):** Transforms raw event streams into medallion architecture layers (`raw` → `stg` → `fct_batch_execution`, `dim_bioreactors`, `dim_assays`).
-4. **Out-of-Specification (OOS) Detection Engine:** Automatically flags process drift and parameter violations against validated batch recipe tolerances.
-5. **Release-Ready Data Marts:** Serves structured, lineage-traced datasets optimized for analytical reporting and Power BI dashboards.
-
----
-
-## Architecture & Data Lineage
+A small, reproducible batch-data pipeline that demonstrates the engineering path from raw synthetic process telemetry to tested analytical outputs:
 
 ```text
-┌─────────────────────────┐     ┌────────────────────────┐     ┌────────────────────────┐
-│  Synthetic Telemetry    │ ──> │   Great Expectations   │ ──> │     Raw DuckDB Lake    │
-│ (Sensors, LIMS, Alarms) │     │  (Data Gate & Schema)  │     │   (Immutable Ingest)   │
-└─────────────────────────┘     └────────────────────────┘     └───────────┬────────────┘
-                                                                           │
-                                ┌──────────────────────────────────────────┘
-                                ▼
-                 ┌─────────────────────────────┐
-                 │          dbt Core           │
-                 │  Staging & Validation Layer │
-                 └──────────────┬──────────────┘
-                                │
-                                ▼
-                 ┌─────────────────────────────┐
-                 │      Dimensional Marts      │
-                 │   (OOS Flags, CPP Lineage)  │
-                 └──────────────┬──────────────┘
-                                │
-                                ▼
-                 ┌─────────────────────────────┐
-                 │     Analytical Outputs      │
-                 │  (Power BI / Batch Dossier) │
-                 └─────────────────────────────┘
+synthetic telemetry
+      ↓
+Python quality gates
+      ↓
+accepted rows ─────────────→ rejected rows + explicit reasons
+      ↓
+DuckDB raw_batch_telemetry
+      ↓
+dbt staging model
+      ↓
+fct_batch_quality
+      ↓
+explainable OOS evidence
 ```
 
----
+This MVP intentionally favors traceability and executable evidence over platform complexity.
 
-## Data Quality Contracts & Great Expectations
+## Verified evidence
 
-Quality gates prevent invalid or corrupted sensor records from entering downstream analytical models:
+The first full GitHub Actions run passed end to end with:
 
-- **Attributable:** Enforces valid operator/system ID attribution on all critical intervention timestamps.
-- **Accurate:** Bounds temperature, pH, dissolved oxygen (DO), and agitation RPM to validated operating ranges.
-- **Contemporaneous:** Validates strict monotonic UTC time increments across sequential batch phases.
-- **Complete:** Rejects batch records with missing Critical Quality Attribute assay endpoints.
+- **6 Python tests passed**;
+- **96 synthetic telemetry rows generated**;
+- **96 accepted / 0 rejected** for the deterministic valid dataset;
+- **2 dbt models + 8 dbt data tests completed successfully**;
+- deterministic OOS evidence produced for `CPP-TEMP-001` and `CQA-ASSAY-001`.
 
----
+## Implemented controls
 
-## Regulated Portfolio Ecosystem
+- deterministic synthetic telemetry generation with seed support;
+- required-field, type, UTC timestamp, duplicate-key, monotonicity, and plausible-range validation;
+- explicit quarantine of rejected records with machine-readable reasons;
+- DuckDB persistence for accepted telemetry;
+- dbt staging and batch-quality mart models;
+- rule-based OOS flags that include rule ID, observed value, expected range, batch, phase, and timestamp;
+- pytest coverage for generation, quality gates, quarantine behavior, OOS explainability, and DuckDB persistence;
+- GitHub Actions gate that runs pytest, the pipeline, `dbt build`, and deterministic OOS evidence generation.
 
-| Repository | Domain Focus | Evidence |
-|---|---|---|
-| [gxp-batch-data-pipeline](https://github.com/alianisreyesr/gxp-batch-data-pipeline) | Batch manufacturing ETL & data contracts | DuckDB · dbt · Great Expectations |
-| [gxp-change-control](https://github.com/alianisreyesr/gxp-change-control) | Controlled change lifecycle & approvals | v1.0.0 · 68 tests · CI/CD |
-| [quality-deviation-risk-monitor](https://github.com/alianisreyesr/quality-deviation-risk-monitor) | Deviation prioritization & scoring | 57 tests · Append-only audit |
-| [csv-evidence-tracker](https://github.com/alianisreyesr/csv-evidence-tracker) | RTM & IQ/OQ/PQ execution patterns | ALCOA+ verified evidence |
-| [data-integrity-case-file](https://github.com/alianisreyesr/data-integrity-case-file) | ALCOA+ gap analysis & investigations | Structured investigation ledger |
-| [csa-assurance-planner](https://github.com/alianisreyesr/csa-assurance-planner) | Risk-based software assurance planning | FDA CSA guidance alignment |
+## Quick start
 
----
+```bash
+python -m venv .venv
+source .venv/bin/activate  # Windows: .venv\Scripts\activate
+python -m pip install -r requirements.txt
 
-## Tech Stack
+python -m src.generate_data --seed 42
+python -m src.ingest
+dbt build --project-dir dbt_project --profiles-dir dbt_project
+python -m src.oos data/synthetic/batch_telemetry.csv
+```
 
-- **Pipeline & Processing:** Python 3.11, DuckDB, Polars, pandas
-- **Transformations & Modeling:** dbt Core (dbt-duckdb)
-- **Data Quality & Contracts:** Great Expectations, Pydantic v2
-- **Testing & CI:** pytest, GitHub Actions, CodeQL
-- **Packaging:** Docker, docker-compose
+Generated runtime files are intentionally ignored by Git.
 
----
+## Synthetic schema
 
-## Spanish Summary / Resumen
+| Field | Meaning |
+|---|---|
+| `batch_id` | Fictional batch identifier |
+| `timestamp_utc` | Explicit UTC telemetry timestamp |
+| `phase` | Synthetic process phase |
+| `bioreactor_id` | Fictional equipment identifier |
+| `temperature_c` | Synthetic process temperature |
+| `ph` | Synthetic pH value |
+| `dissolved_oxygen_pct` | Synthetic dissolved oxygen percentage |
+| `agitation_rpm` | Synthetic agitation rate |
+| `assay_pct` | Synthetic assay/CQA result |
 
-Pipeline de ingeniería de datos para **manufactura farmacéutica y bioprocesos**: ingestión de telemetría de bioprocesos sintética → validación mediante contratos de datos (Great Expectations) → transformaciones dimensionales con dbt y DuckDB → detección de desviaciones fuera de especificación (OOS) → capas de datos listas para analítica y Power BI. Todo construido con datos 100% sintéticos bajo principios GxP y ALCOA+.
+## Quality gate vs. OOS rule
 
----
+The quality gate checks whether a record is structurally trustworthy enough to enter the analytical pipeline. OOS rules are intentionally narrower process-review rules. A record can therefore be **valid telemetry but still OOS**, which keeps data-integrity validation separate from quality interpretation.
 
-<div align="center">
+Examples:
 
-Built by [Alianis Reyes-Reyes](https://github.com/alianisreyesr) · [LinkedIn](https://www.linkedin.com/in/alianis-reyes-reyes/) · [Digital Portfolio](https://poplme.co/hash/aJvjFE0Z/1/es)
+```text
+invalid timestamp → quarantine
+missing pH        → quarantine
+999 °C            → quarantine
+39.2 °C           → accepted telemetry + CPP-TEMP-001 OOS flag
+87.5% assay       → accepted telemetry + CQA-ASSAY-001 OOS flag
+```
 
-</div>
+## Repository structure
+
+```text
+src/                     synthetic generation, quality gates, ingestion, OOS rules
+tests/                   pytest verification
+data/                     generated synthetic and rejected records (ignored)
+warehouse/                local DuckDB runtime database (ignored)
+dbt_project/              dbt sources, staging, mart, and tests
+.github/workflows/ci.yml  automated quality gate
+```
+
+## Current limitations
+
+This MVP does **not** include authentication, electronic signatures, governed deployment, validated infrastructure, formal CSV evidence, production data connectors, streaming, ML prediction, or cloud/Kubernetes deployment. Those are deliberately out of scope until the executable baseline is stable.
+
+## Portfolio objective
+
+This repository demonstrates one concise engineering story:
+
+**synthetic telemetry → explicit data-quality decisions → reproducible warehouse → tested transformations → explainable quality signals**.

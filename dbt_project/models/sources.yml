@@ -1,0 +1,7 @@
+version: 2
+sources:
+  - name: raw
+    schema: main
+    tables:
+      - name: raw_batch_telemetry
+        description: Accepted synthetic telemetry after Python quality gates.

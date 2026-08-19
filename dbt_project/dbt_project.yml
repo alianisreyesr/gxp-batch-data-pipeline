@@ -1,0 +1,13 @@
+name: gxp_batch_data_pipeline
+version: 1.0.0
+config-version: 2
+profile: gxp_batch_data_pipeline
+model-paths: ["models"]
+test-paths: ["tests"]
+clean-targets: ["target", "dbt_packages"]
+models:
+  gxp_batch_data_pipeline:
+    staging:
+      +materialized: view
+    marts:
+      +materialized: table
