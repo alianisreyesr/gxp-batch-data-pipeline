@@ -10,7 +10,7 @@
 [![Coverage](https://img.shields.io/badge/coverage-80.25%25-brightgreen?style=flat)]()
 [![License](https://img.shields.io/badge/license-MIT-green?style=flat)](LICENSE)
 
-**GxP · Batch Data Pipeline · DuckDB · dbt · Great Expectations · ALCOA+**
+**GxP · Batch Data Pipeline · DuckDB · dbt · ALCOA+**
 
 *Portfolio-safe pharmaceutical batch manufacturing data pipeline — synthetic data only.*
 
