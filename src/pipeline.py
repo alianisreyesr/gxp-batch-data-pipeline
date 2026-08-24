@@ -11,6 +11,7 @@ from typing import Any
 from src.generate_data import generate_rows, write_csv
 from src.ingest import ingest
 from src.oos import evaluate_oos
+from src.quality_summary import build_quality_review_summary
 
 MANIFEST_SCHEMA_VERSION = "1.0"
 SAFETY_BOUNDARY = (
@@ -76,6 +77,7 @@ def run_pipeline(
     database_path = root / "warehouse" / "batch.duckdb"
     oos_path = root / "artifacts" / "oos_evidence.json"
     manifest_path = root / "artifacts" / "run_manifest.json"
+    quality_summary_path = root / "artifacts" / "quality_review_summary.json"
 
     rows = generate_rows(seed=seed, batches=batches, rows_per_phase=rows_per_phase)
     write_csv(rows, source_path)
@@ -89,6 +91,7 @@ def run_pipeline(
         for flag in raw_flags
     ]
     write_json(oos_path, flags)
+    write_json(quality_summary_path, build_quality_review_summary(flags))
 
     oos_by_rule = dict(sorted(Counter(str(flag["rule_id"]) for flag in flags).items()))
     run_id = f"run-{source_sha256[:16]}"
@@ -114,6 +117,7 @@ def run_pipeline(
             "duckdb": _relative(database_path, root),
             "oos_json": _relative(oos_path, root),
             "manifest_json": _relative(manifest_path, root),
+            "quality_summary_json": _relative(quality_summary_path, root),
         },
         "safety_boundary": SAFETY_BOUNDARY,
     }
