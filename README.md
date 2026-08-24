@@ -3,6 +3,7 @@
 <div align="center">
 
 [![CI](https://github.com/alianisreyesr/gxp-batch-data-pipeline/actions/workflows/ci.yml/badge.svg)](https://github.com/alianisreyesr/gxp-batch-data-pipeline/actions/workflows/ci.yml)
+[![CodeQL](https://github.com/alianisreyesr/gxp-batch-data-pipeline/actions/workflows/codeql.yml/badge.svg)](https://github.com/alianisreyesr/gxp-batch-data-pipeline/actions/workflows/codeql.yml)
 [![Python](https://img.shields.io/badge/Python-3.11-3776AB?style=flat&logo=python&logoColor=white)](https://www.python.org/)
 [![DuckDB](https://img.shields.io/badge/DuckDB-analytical%20warehouse-FFF000?style=flat&logo=duckdb&logoColor=black)](https://duckdb.org/)
 [![dbt](https://img.shields.io/badge/dbt-data%20transformations-FF694B?style=flat&logo=dbt&logoColor=white)](https://www.getdbt.com/)
@@ -14,6 +15,8 @@
 
 *Portfolio-safe pharmaceutical batch manufacturing data pipeline — synthetic data only.*
 
+[Run evidence](#run-evidence) · [One-command pipeline](#one-command-pipeline) · [Case study](docs/CASE_STUDY.md) · [Controls](#implemented-controls) · [Contributing](CONTRIBUTING.md) · [Security](SECURITY.md)
+
 </div>
 
 ---
@@ -24,20 +27,16 @@
 
 A traceable batch-data pipeline that produces durable run evidence from deterministic synthetic process telemetry:
 
-```text
-synthetic telemetry
-      ↓
-Python quality gates
-      ↓
-accepted rows ───────────────→ rejected rows + explicit reasons
-      ↓
-DuckDB raw_batch_telemetry
-      ↓
-explainable OOS evaluation ─→ artifacts/oos_evidence.json
-      ↓
-run manifest ─────────────→ artifacts/run_manifest.json
-      ↓
-dbt staging + quality mart
+```mermaid
+flowchart TD
+    A[Synthetic telemetry] --> B[Python schema and quality gates]
+    B -->|Accepted| C[(DuckDB raw batch telemetry)]
+    B -->|Rejected| D[Quarantine with explicit reasons]
+    C --> E[Explainable OOS evaluation]
+    E --> F[OOS evidence JSON]
+    E --> G[Run manifest with source SHA-256]
+    C --> H[dbt staging and quality mart]
+    H --> I[dbt data tests]
 ```
 
 The implementation intentionally favors traceability and executable evidence over platform complexity.
