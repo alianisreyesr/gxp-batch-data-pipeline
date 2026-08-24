@@ -81,4 +81,5 @@ def test_manifest_contains_configuration_artifacts_and_safety_boundary(tmp_path:
         "duckdb": "warehouse/batch.duckdb",
         "oos_json": "artifacts/oos_evidence.json",
         "manifest_json": "artifacts/run_manifest.json",
+        "quality_summary_json": "artifacts/quality_review_summary.json",
     }
