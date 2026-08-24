@@ -13,6 +13,7 @@ REQUIRED_ARTIFACTS = (
     "duckdb",
     "oos_json",
     "manifest_json",
+    "quality_summary_json",
 )
 
 
@@ -69,6 +70,17 @@ def verify_run_evidence(root: Path = Path(".")) -> dict[str, Any]:
         raise ValueError("OOS evidence must be a JSON array")
     if counts.get("oos_flags") != len(flags):
         raise ValueError("OOS evidence count does not match the run manifest")
+
+    quality_summary = json.loads(resolved["quality_summary_json"].read_text(encoding="utf-8"))
+    if not isinstance(quality_summary, dict):
+        raise ValueError("quality review summary must be a JSON object")
+    if quality_summary.get("total_oos_flags") != len(flags):
+        raise ValueError("quality review summary count does not match OOS evidence")
+    if quality_summary.get("oos_by_rule") != manifest.get("oos_by_rule"):
+        raise ValueError("quality review summary rule counts do not match the run manifest")
+    review_queue = quality_summary.get("review_queue")
+    if not isinstance(review_queue, list) or len(review_queue) != len(flags):
+        raise ValueError("quality review summary queue does not match OOS evidence")
 
     return {
         "status": "verified",

@@ -19,6 +19,7 @@ def test_verify_run_evidence_accepts_a_canonical_run(tmp_path: Path) -> None:
     assert result["counts"] == manifest["counts"]
     assert result["checked_artifacts"] == [
         "artifacts/oos_evidence.json",
+        "artifacts/quality_review_summary.json",
         "artifacts/run_manifest.json",
         "data/rejected/rejected_rows.csv",
         "data/synthetic/batch_telemetry.csv",

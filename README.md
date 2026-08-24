@@ -34,6 +34,7 @@ flowchart TD
     B -->|Rejected| D[Quarantine with explicit reasons]
     C --> E[Explainable OOS evaluation]
     E --> F[OOS evidence JSON]
+    F --> J[Batch-quality review summary]
     E --> G[Run manifest with source SHA-256]
     C --> H[dbt staging and quality mart]
     H --> I[dbt data tests]
@@ -107,6 +108,8 @@ flowchart TB
   C --> CC["Accepted telemetry and dbt models"]
   R --> D["artifacts/oos_evidence.json"]
   D --> DD["Structured OOS flags"]
+  R --> Q["artifacts/quality_review_summary.json"]
+  Q --> QQ["Batch, phase, rule, and review-queue summary"]
   R --> E["artifacts/run_manifest.json"]
   E --> EE["Configuration, source hash, counts, OOS summary, artifact paths, and safety boundary"]
 ```
@@ -121,6 +124,7 @@ The run ID is derived from the source CSV hash. The repository does **not** clai
 - DuckDB persistence for accepted telemetry
 - Rule-based OOS flags with rule ID, observed value, expected range, batch, phase, and timestamp
 - Structured OOS JSON evidence
+- Machine-readable quality-review summary grouped by batch, phase, and rule
 - Source CSV SHA-256 evidence and deterministic run ID
 - Versioned run-manifest schema
 - dbt staging and batch-quality mart models
