@@ -15,7 +15,7 @@
 
 *Portfolio-safe pharmaceutical batch manufacturing data pipeline — synthetic data only.*
 
-[Run evidence](#run-evidence) · [One-command pipeline](#one-command-pipeline) · [Case study](docs/CASE_STUDY.md) · [Controls](#implemented-controls) · [Contributing](CONTRIBUTING.md) · [Security](SECURITY.md)
+[Run evidence](#run-evidence) · [Evidence verification](#evidence-verification) · [One-command pipeline](#one-command-pipeline) · [Case study](docs/CASE_STUDY.md) · [Data contract](docs/DATA_CONTRACT.md) · [Controls](#implemented-controls) · [Contributing](CONTRIBUTING.md) · [Security](SECURITY.md)
 
 </div>
 
@@ -80,6 +80,17 @@ To run the analytical transformation layer afterward:
 ```bash
 dbt build --project-dir dbt_project --profiles-dir dbt_project
 ```
+
+## Evidence verification
+
+After the pipeline generates its local runtime artifacts, verify that the manifest, source hash, evidence files, and OOS count agree:
+
+```bash
+python -m src.verify_evidence
+```
+
+The verifier exits non-zero if an expected evidence artifact is missing, a referenced path leaves the selected run root, the source CSV no longer matches the manifest SHA-256, the deterministic run ID is inconsistent, or the OOS evidence count differs from the manifest. It verifies evidence integrity; it does not represent a regulated review, release decision, or validation record.
+
 
 ## Run evidence
 
