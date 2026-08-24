@@ -15,6 +15,10 @@ Data engineers run a deterministic pipeline; analysts query curated DuckDB model
 - SHA-256 source hashes and run manifests preserve technical lineage.
 - dbt tests validate transformations, while pytest covers pipeline behavior and failure paths.
 
+## Data contract
+
+The [synthetic telemetry data contract](DATA_CONTRACT.md) documents the row-level grain, input schema, acceptance rules, output artifacts, and the distinction between a rejected record and an explainable OOS signal. It gives reviewers a concise, implementation-independent way to assess the pipeline's data boundaries.
+
 ## Evidence
 
 CI runs the Python and dbt checks. The README publishes the expected run output, coverage gate, schema, control points, and repository structure.
