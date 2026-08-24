@@ -14,6 +14,7 @@ REQUIRED_ARTIFACTS = (
     "oos_json",
     "manifest_json",
     "quality_summary_json",
+    "quality_report_html",
 )
 
 
