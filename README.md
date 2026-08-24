@@ -85,21 +85,19 @@ dbt build --project-dir dbt_project --profiles-dir dbt_project
 
 The pipeline writes runtime evidence under ignored local paths:
 
-```text
-data/synthetic/batch_telemetry.csv
-      └── SHA-256 recorded in manifest
-
-data/rejected/rejected_rows.csv
-      └── quarantined rows + explicit reasons
-
-warehouse/batch.duckdb
-      └── accepted telemetry and dbt models
-
-artifacts/oos_evidence.json
-      └── structured OOS flags
-
-artifacts/run_manifest.json
-      └── configuration, source hash, counts, OOS summary, artifact paths, safety boundary
+```mermaid
+flowchart TB
+  R["Pipeline run"]
+  R --> A["data/synthetic/batch_telemetry.csv"]
+  A --> AA["SHA-256 recorded in manifest"]
+  R --> B["data/rejected/rejected_rows.csv"]
+  B --> BB["Quarantined rows and explicit reasons"]
+  R --> C["warehouse/batch.duckdb"]
+  C --> CC["Accepted telemetry and dbt models"]
+  R --> D["artifacts/oos_evidence.json"]
+  D --> DD["Structured OOS flags"]
+  R --> E["artifacts/run_manifest.json"]
+  E --> EE["Configuration, source hash, counts, OOS summary, artifact paths, and safety boundary"]
 ```
 
 The run ID is derived from the source CSV hash. The repository does **not** claim the DuckDB file itself is cryptographically reproducible.
@@ -125,12 +123,15 @@ The quality gate decides whether a record is structurally trustworthy enough to 
 
 Examples:
 
-```text
-invalid timestamp → quarantine
-missing pH        → quarantine
-999 °C            → quarantine
-39.2 °C           → accepted telemetry + CPP-TEMP-001 OOS flag
-87.5% assay       → accepted telemetry + CQA-ASSAY-001 OOS flag
+```mermaid
+flowchart LR
+  A["Invalid timestamp"] --> Q["Quarantine"]
+  B["Missing pH"] --> Q
+  C["999 °C"] --> Q
+  D["39.2 °C"] --> T["Accepted telemetry"]
+  D --> O1["CPP-TEMP-001 OOS flag"]
+  E["87.5% assay"] --> T
+  E --> O2["CQA-ASSAY-001 OOS flag"]
 ```
 
 ## Synthetic schema
@@ -149,14 +150,16 @@ missing pH        → quarantine
 
 ## Repository structure
 
-```text
-src/                     generation, quality gates, ingestion, OOS rules, pipeline orchestration
-tests/                   pytest verification
-data/                    generated synthetic and rejected records (ignored)
-warehouse/               local DuckDB runtime database (ignored)
-artifacts/               generated manifest and OOS evidence (ignored)
-dbt_project/             dbt sources, staging, mart, and tests
-.github/workflows/ci.yml automated quality gate
+```mermaid
+flowchart TB
+  R["gxp-batch-data-pipeline"]
+  R --> S["src — generation, quality gates, ingestion, OOS rules, and orchestration"]
+  R --> T["tests — pytest verification"]
+  R --> D["data — generated synthetic and rejected records"]
+  R --> W["warehouse — local DuckDB runtime database"]
+  R --> A["artifacts — generated manifest and OOS evidence"]
+  R --> B["dbt_project — sources, staging, mart, and tests"]
+  R --> G[".github/workflows/ci.yml — automated quality gate"]
 ```
 
 ## Scope & production path
