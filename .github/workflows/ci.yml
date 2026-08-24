@@ -44,5 +44,7 @@ jobs:
           assert manifest['run_id'] == f"run-{manifest['source_sha256'][:16]}"
           print(json.dumps(manifest, indent=2, sort_keys=True))
           PY
+      - name: Verify generated run evidence
+        run: python -m src.verify_evidence
       - name: Run dbt models and tests
         run: dbt build --project-dir dbt_project --profiles-dir dbt_project
