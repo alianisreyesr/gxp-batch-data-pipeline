@@ -1,5 +1,11 @@
+import csv
+import json
+import sys
+from pathlib import Path
+
 from src.generate_data import generate_rows
 from src.oos import evaluate_oos
+from src.oos import main as oos_main
 from src.quality import validate_rows
 
 
@@ -39,3 +45,20 @@ def test_oos_flags_are_explainable() -> None:
         assert flag["batch_id"]
         assert flag["parameter"]
         assert flag["expected_range"]
+
+
+def test_oos_main_prints_flags_as_json(tmp_path: Path, capsys, monkeypatch) -> None:
+    rows = generate_rows(seed=42, batches=3, rows_per_phase=8)
+    accepted, _ = validate_rows(rows)
+    csv_path = tmp_path / "accepted.csv"
+    with csv_path.open("w", newline="", encoding="utf-8") as handle:
+        writer = csv.DictWriter(handle, fieldnames=accepted[0].keys())
+        writer.writeheader()
+        writer.writerows(accepted)
+
+    monkeypatch.setattr(sys, "argv", ["oos", str(csv_path)])
+    oos_main()
+
+    printed = json.loads(capsys.readouterr().out)
+    assert isinstance(printed, list)
+    assert {flag["rule_id"] for flag in printed} >= {"CPP-TEMP-001", "CQA-ASSAY-001"}
