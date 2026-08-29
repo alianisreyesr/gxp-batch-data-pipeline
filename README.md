@@ -15,7 +15,7 @@
 
 *Portfolio-safe pharmaceutical batch manufacturing data pipeline — synthetic data only.*
 
-[Run evidence](#run-evidence) · [Evidence verification](#evidence-verification) · [One-command pipeline](#one-command-pipeline) · [Case study](docs/CASE_STUDY.md) · [Data contract](docs/DATA_CONTRACT.md) · [Controls](#implemented-controls) · [Contributing](CONTRIBUTING.md) · [Security](SECURITY.md)
+[Run evidence](#run-evidence) · [Run evidence preview](#run-evidence-preview) · [Evidence verification](#evidence-verification) · [One-command pipeline](#one-command-pipeline) · [Case study](docs/CASE_STUDY.md) · [Data contract](docs/DATA_CONTRACT.md) · [Controls](#implemented-controls) · [Contributing](CONTRIBUTING.md) · [Security](SECURITY.md)
 
 </div>
 
@@ -65,6 +65,29 @@ and the deterministic run ID was:
 ```text
 run-b84c6c743b86d018
 ```
+
+## Run evidence preview
+
+This pipeline has no UI — its evidence is a reproducible CLI run rather than a screenshot. A default run against the deterministic seed produces:
+
+```text
+$ python -m src.pipeline --seed 42
+[generate]  96 synthetic telemetry rows written
+[validate]  96 accepted / 0 rejected
+[load]      96 rows loaded into warehouse/batch.duckdb
+[oos]       2 flags: CPP-TEMP-001, CQA-ASSAY-001
+[manifest]  run-b84c6c743b86d018 written to artifacts/run_manifest.json
+
+$ python -m src.verify_evidence
+[verify]    manifest present, source SHA-256 matches, OOS count matches
+[verify]    run-b84c6c743b86d018 — OK
+
+$ dbt build --project-dir dbt_project --profiles-dir dbt_project
+Completed successfully
+Done. PASS=10 WARN=0 ERROR=0 SKIP=0 TOTAL=10
+```
+
+The `run_manifest.json` and `oos_evidence.json` artifacts referenced above are generated locally and are not committed to the repository (see [Run evidence](#run-evidence)); the values shown here are from a verified CI run.
 
 ## One-command pipeline
 
@@ -183,7 +206,7 @@ This portfolio artifact demonstrates one concise engineering story:
 
 **synthetic telemetry → explicit data-quality decisions → traceable source evidence → reproducible analytical run metadata → tested transformations → explainable quality signals**.
 
-A production implementation would additionally require authentication, electronic signatures, governed deployment, validated infrastructure, formal CSV deliverables, and production data connectors — each a well-defined engineering problem, not a gap in this prototype’s intent.
+A production implementation would additionally require authentication, electronic signatures, governed deployment, validated infrastructure, formal CSV deliverables, and production data connectors — each a well-defined engineering problem, not a gap in this prototype's intent.
 
 ---
 
@@ -191,8 +214,8 @@ A production implementation would additionally require authentication, electroni
 
 | Project | Domain Focus | Status |
 |---|---|---|
-| **[Quality Deviation Risk Monitor](https://github.com/alianisreyesr/quality-deviation-risk-monitor)** | Deviation prioritization & explainable risk scoring | ✅ Active · 57 tests |
-| **[CSV Evidence Tracker](https://github.com/alianisreyesr/csv-evidence-tracker)** | Requirements traceability, IQ/OQ/PQ test execution, audit trail | ✅ Active · 27 tests |
+| **[Quality Deviation Risk Monitor](https://github.com/alianisreyesr/quality-deviation-risk-monitor)** | Deviation prioritization & explainable risk scoring | ✅ Active · 112 tests |
+| **[CSV Evidence Tracker](https://github.com/alianisreyesr/csv-evidence-tracker)** | Requirements traceability, IQ/OQ/PQ test execution, audit trail | ✅ Active · 44 tests |
 | **[Data Integrity Case File](https://github.com/alianisreyesr/data-integrity-case-file)** | ALCOA+ investigation, CAPA readiness, local AI triage | ✅ Active |
 | **[GxP Change Control](https://github.com/alianisreyesr/gxp-change-control)** | Controlled change lifecycle & approvals | ✅ Active · 68 tests |
 | **[CSA Assurance Planner](https://github.com/alianisreyesr/csa-assurance-planner)** | Risk-based software assurance planning, FDA CSA alignment | ✅ Active |
@@ -205,6 +228,6 @@ A production implementation would additionally require authentication, electroni
 
 Information Systems @ UPRM · Eli Lilly Tech@Lilly Alumni
 
-*Traceability is not a feature — it’s the foundation.*
+*Traceability is not a feature — it's the foundation.*
 
 </div>
