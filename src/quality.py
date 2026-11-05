@@ -1,7 +1,7 @@
 from __future__ import annotations
 
+from collections.abc import Iterable
 from datetime import datetime
-from typing import Iterable
 
 REQUIRED_FIELDS = (
     "batch_id", "timestamp_utc", "phase", "bioreactor_id", "temperature_c",
@@ -20,8 +20,9 @@ PLAUSIBLE_RANGES = {
 def _parse_utc(value: str) -> datetime:
     if not value or not value.endswith("Z"):
         raise ValueError("timestamp must be explicit UTC with Z suffix")
-    parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
-    if parsed.utcoffset() is None or parsed.utcoffset().total_seconds() != 0:
+    parsed = datetime.fromisoformat(value)  # Python 3.11+ accepts the "Z" suffix
+    offset = parsed.utcoffset()
+    if offset is None or offset.total_seconds() != 0:
         raise ValueError("timestamp must be UTC")
     return parsed
 
@@ -50,7 +51,7 @@ def validate_rows(rows: Iterable[dict[str, object]]) -> tuple[list[dict[str, obj
             if row.get(field) in (None, ""):
                 continue
             try:
-                value = float(row[field])
+                value = float(str(row[field]))
             except (TypeError, ValueError):
                 reasons.append(f"invalid:{field}")
                 continue

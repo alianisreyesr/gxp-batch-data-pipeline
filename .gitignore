@@ -11,3 +11,17 @@ artifacts/*.json
 dbt_project/target/
 dbt_project/logs/
 dbt_project/dbt_packages/
+.ruff_cache/
+.mypy_cache/
+.coverage.*
+coverage.xml
+.env
+.env.*
+!.env.example
+*.egg-info/
+.idea/
+.vscode/
+.DS_Store
+warehouse/*.duckdb.wal
+artifacts/*.html
+dbt_project/.user.yml

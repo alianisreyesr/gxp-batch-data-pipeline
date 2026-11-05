@@ -32,9 +32,12 @@ def ingest(input_path: Path, database_path: Path, rejected_path: Path) -> tuple[
     database_path.parent.mkdir(parents=True, exist_ok=True)
     connection = duckdb.connect(str(database_path))
     try:
-        connection.execute("DROP TABLE IF EXISTS raw_batch_telemetry")
+        # The table is replaced atomically: if validation or loading fails part-way,
+        # the transaction rolls back and the previously loaded data stays intact
+        # (no destructive DROP TABLE before the new load is known to succeed).
+        connection.execute("BEGIN TRANSACTION")
         connection.execute("""
-            CREATE TABLE raw_batch_telemetry (
+            CREATE OR REPLACE TABLE raw_batch_telemetry (
                 batch_id VARCHAR NOT NULL,
                 timestamp_utc TIMESTAMPTZ NOT NULL,
                 phase VARCHAR NOT NULL,
@@ -50,6 +53,10 @@ def ingest(input_path: Path, database_path: Path, rejected_path: Path) -> tuple[
             "INSERT INTO raw_batch_telemetry VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
             [tuple(row[field] for field in FIELDNAMES) for row in accepted],
         )
+        connection.execute("COMMIT")
+    except Exception:
+        connection.execute("ROLLBACK")
+        raise
     finally:
         connection.close()
     return len(accepted), len(rejected)

@@ -40,7 +40,7 @@ def verify_run_evidence(root: Path = Path(".")) -> dict[str, Any]:
 
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
     if not isinstance(manifest, dict):
-        raise ValueError("run manifest must be a JSON object")
+        raise TypeError("run manifest must be a JSON object")
 
     artifacts = manifest.get("artifacts")
     counts = manifest.get("counts")
@@ -48,9 +48,9 @@ def verify_run_evidence(root: Path = Path(".")) -> dict[str, Any]:
     run_id = manifest.get("run_id")
 
     if not isinstance(artifacts, dict):
-        raise ValueError("run manifest has no artifact map")
+        raise TypeError("run manifest has no artifact map")
     if not isinstance(counts, dict):
-        raise ValueError("run manifest has no counts map")
+        raise TypeError("run manifest has no counts map")
     if not isinstance(source_sha256, str) or len(source_sha256) != 64:
         raise ValueError("run manifest has an invalid source SHA-256")
     if run_id != f"run-{source_sha256[:16]}":
@@ -68,13 +68,13 @@ def verify_run_evidence(root: Path = Path(".")) -> dict[str, Any]:
 
     flags = json.loads(resolved["oos_json"].read_text(encoding="utf-8"))
     if not isinstance(flags, list):
-        raise ValueError("OOS evidence must be a JSON array")
+        raise TypeError("OOS evidence must be a JSON array")
     if counts.get("oos_flags") != len(flags):
         raise ValueError("OOS evidence count does not match the run manifest")
 
     quality_summary = json.loads(resolved["quality_summary_json"].read_text(encoding="utf-8"))
     if not isinstance(quality_summary, dict):
-        raise ValueError("quality review summary must be a JSON object")
+        raise TypeError("quality review summary must be a JSON object")
     if quality_summary.get("total_oos_flags") != len(flags):
         raise ValueError("quality review summary count does not match OOS evidence")
     if quality_summary.get("oos_by_rule") != manifest.get("oos_by_rule"):
@@ -99,7 +99,7 @@ def main() -> None:
 
     try:
         result = verify_run_evidence(args.root)
-    except (FileNotFoundError, ValueError, json.JSONDecodeError) as exc:
+    except (FileNotFoundError, TypeError, ValueError, json.JSONDecodeError) as exc:
         raise SystemExit(f"evidence verification failed: {exc}") from exc
 
     print(json.dumps(result, indent=2, sort_keys=True))

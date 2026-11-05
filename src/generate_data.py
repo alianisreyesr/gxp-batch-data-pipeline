@@ -3,7 +3,7 @@ from __future__ import annotations
 import argparse
 import csv
 import random
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
 PHASES = ("fermentation", "purification", "formulation", "release_testing")
@@ -16,7 +16,7 @@ FIELDNAMES = (
 def generate_rows(seed: int = 42, batches: int = 3, rows_per_phase: int = 8) -> list[dict[str, object]]:
     rng = random.Random(seed)
     rows: list[dict[str, object]] = []
-    start = datetime(2026, 1, 1, 8, 0, tzinfo=timezone.utc)
+    start = datetime(2026, 1, 1, 8, 0, tzinfo=UTC)
     for batch_index in range(1, batches + 1):
         batch_id = f"BATCH-{batch_index:04d}"
         for phase_index, phase in enumerate(PHASES):

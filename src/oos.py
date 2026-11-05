@@ -3,8 +3,8 @@ from __future__ import annotations
 import argparse
 import csv
 import json
+from collections.abc import Iterable
 from pathlib import Path
-from typing import Iterable
 
 RULES = {
     "temperature_c": (35.0, 38.0, "CPP-TEMP-001"),
@@ -18,7 +18,7 @@ def evaluate_oos(rows: Iterable[dict[str, object]]) -> list[dict[str, object]]:
     flags: list[dict[str, object]] = []
     for row in rows:
         for field, (minimum, maximum, rule_id) in RULES.items():
-            value = float(row[field])
+            value = float(str(row[field]))
             if value < minimum or value > maximum:
                 flags.append({
                     "rule_id": rule_id,

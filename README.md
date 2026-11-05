@@ -42,7 +42,7 @@ The implementation intentionally favors traceability and executable evidence ove
 
 ## Verified CI evidence
 
-The GitHub Actions workflow completed successfully with:
+The CI workflow gates on the following (counts from the latest local run of the same commands):
 
 - **37 Python tests passed**
 - **88% Python statement coverage** with an **85% CI gate**
@@ -149,7 +149,7 @@ The run ID is derived from the source CSV hash. The repository does **not** clai
 - Source CSV SHA-256 evidence and deterministic run ID
 - Versioned run-manifest schema
 - dbt staging and batch-quality mart models
-- 12-test Python suite with measured statement coverage
+- 37-test Python suite with measured statement coverage
 - GitHub Actions gate using least-privilege `contents: read` permissions
 - Deterministic manifest assertions followed by `dbt build`
 

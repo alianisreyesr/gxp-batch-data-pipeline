@@ -66,7 +66,7 @@ def test_verify_run_evidence_rejects_non_object_manifest(tmp_path: Path) -> None
     manifest_path = tmp_path / "artifacts" / "run_manifest.json"
     _write_json(manifest_path, [1, 2, 3])
 
-    with pytest.raises(ValueError, match="must be a JSON object"):
+    with pytest.raises(TypeError, match="must be a JSON object"):
         verify_run_evidence(tmp_path)
 
 
@@ -77,7 +77,7 @@ def test_verify_run_evidence_rejects_missing_artifact_map(tmp_path: Path) -> Non
     del manifest["artifacts"]
     _write_json(manifest_path, manifest)
 
-    with pytest.raises(ValueError, match="no artifact map"):
+    with pytest.raises(TypeError, match="no artifact map"):
         verify_run_evidence(tmp_path)
 
 
@@ -88,7 +88,7 @@ def test_verify_run_evidence_rejects_missing_counts_map(tmp_path: Path) -> None:
     del manifest["counts"]
     _write_json(manifest_path, manifest)
 
-    with pytest.raises(ValueError, match="no counts map"):
+    with pytest.raises(TypeError, match="no counts map"):
         verify_run_evidence(tmp_path)
 
 
@@ -152,7 +152,7 @@ def test_verify_run_evidence_rejects_non_list_oos_evidence(tmp_path: Path) -> No
     oos_path = tmp_path / "artifacts" / "oos_evidence.json"
     _write_json(oos_path, {"not": "a list"})
 
-    with pytest.raises(ValueError, match="OOS evidence must be a JSON array"):
+    with pytest.raises(TypeError, match="OOS evidence must be a JSON array"):
         verify_run_evidence(tmp_path)
 
 
@@ -172,7 +172,7 @@ def test_verify_run_evidence_rejects_non_object_quality_summary(tmp_path: Path) 
     summary_path = tmp_path / "artifacts" / "quality_review_summary.json"
     _write_json(summary_path, [1, 2, 3])
 
-    with pytest.raises(ValueError, match="quality review summary must be a JSON object"):
+    with pytest.raises(TypeError, match="quality review summary must be a JSON object"):
         verify_run_evidence(tmp_path)
 
 

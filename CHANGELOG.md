@@ -4,6 +4,17 @@ All notable changes to this portfolio project are documented in this file.
 
 The project follows semantic versioning for public portfolio releases. Version numbers describe the repository's software baseline; they do not indicate regulatory validation, approval, or fitness for a regulated intended use.
 
+## [Unreleased]
+
+### Changed
+
+- `ingest` now replaces `raw_batch_telemetry` inside a transaction (`CREATE OR REPLACE TABLE`) and rolls back on failure instead of an unconditional `DROP TABLE`
+- Evidence verifier raises `TypeError` for wrongly typed JSON documents
+- Python timestamp validation simplified; `mypy` and `ruff` now pass cleanly
+- Pinned runtime and development dependencies; separate `requirements-dev.txt`
+- CI runs `ruff`, `mypy` and `pip-audit`; coverage gate raised to 85%
+- Expanded `SECURITY.md` and `.gitignore`
+
 ## [1.0.0] — 2026-08-27
 
 ### Added

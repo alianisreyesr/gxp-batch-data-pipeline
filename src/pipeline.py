@@ -4,15 +4,15 @@ import argparse
 import hashlib
 import json
 from collections import Counter
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
 from src.generate_data import generate_rows, write_csv
 from src.ingest import ingest
 from src.oos import evaluate_oos
-from src.quality_summary import build_quality_review_summary
 from src.quality_report import write_quality_report
+from src.quality_summary import build_quality_review_summary
 
 MANIFEST_SCHEMA_VERSION = "1.0"
 SAFETY_BOUNDARY = (
@@ -33,8 +33,8 @@ def sha256_file(path: Path) -> str:
 def _json_value(value: Any) -> Any:
     if isinstance(value, datetime):
         if value.tzinfo is None:
-            value = value.replace(tzinfo=timezone.utc)
-        return value.astimezone(timezone.utc).isoformat().replace("+00:00", "Z")
+            value = value.replace(tzinfo=UTC)
+        return value.astimezone(UTC).isoformat().replace("+00:00", "Z")
     return value
 
 
