@@ -1,0 +1,17 @@
+.git
+.github
+.venv
+__pycache__
+*.pyc
+.pytest_cache
+.coverage
+htmlcov
+warehouse/*.duckdb
+data/synthetic/*.csv
+data/rejected/*.csv
+artifacts/*.json
+dbt_project/target
+dbt_project/logs
+dbt_project/dbt_packages
+tests
+docs
