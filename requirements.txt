@@ -1,5 +1,5 @@
 duckdb>=1.5.5,<2
 pytz>=2024.1
 dbt-duckdb>=1.8,<2
-pytest>=8,<10
+pytest>=9.2.0,<10
 pytest-cov>=7.1.0,<8
