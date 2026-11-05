@@ -7,8 +7,6 @@
 [![Python](https://img.shields.io/badge/Python-3.11-3776AB?style=flat&logo=python&logoColor=white)](https://www.python.org/)
 [![DuckDB](https://img.shields.io/badge/DuckDB-analytical%20warehouse-FFF000?style=flat&logo=duckdb&logoColor=black)](https://duckdb.org/)
 [![dbt](https://img.shields.io/badge/dbt-data%20transformations-FF694B?style=flat&logo=dbt&logoColor=white)](https://www.getdbt.com/)
-[![Tests](https://img.shields.io/badge/tests-12%20passing-brightgreen?style=flat)]()
-[![Coverage](https://img.shields.io/badge/coverage-80.25%25-brightgreen?style=flat)]()
 [![License](https://img.shields.io/badge/license-MIT-green?style=flat)](LICENSE)
 
 **GxP · Batch Data Pipeline · DuckDB · dbt · ALCOA+**
@@ -46,8 +44,8 @@ The implementation intentionally favors traceability and executable evidence ove
 
 The GitHub Actions workflow completed successfully with:
 
-- **12 Python tests passed**
-- **80.25% Python statement coverage** with an **80% CI gate**
+- **37 Python tests passed**
+- **88% Python statement coverage** with an **85% CI gate**
 - **96 synthetic telemetry rows generated**
 - **96 accepted / 0 rejected** for the deterministic default dataset
 - **2 explainable OOS flags**: one `CPP-TEMP-001` and one `CQA-ASSAY-001`
@@ -210,15 +208,19 @@ A production implementation would additionally require authentication, electroni
 
 ---
 
-## Regulated Portfolio Ecosystem
+## Portfolio Ecosystem
 
 | Project | Domain Focus | Status |
 |---|---|---|
-| **[Quality Deviation Risk Monitor](https://github.com/alianisreyesr/quality-deviation-risk-monitor)** | Deviation prioritization & explainable risk scoring | ✅ Active · 112 tests |
-| **[CSV Evidence Tracker](https://github.com/alianisreyesr/csv-evidence-tracker)** | Requirements traceability, IQ/OQ/PQ test execution, audit trail | ✅ Active · 44 tests |
+| **[Quality Deviation Risk Monitor](https://github.com/alianisreyesr/quality-deviation-risk-monitor)** | Deviation prioritization & explainable risk scoring | ✅ Active |
+| **[CSV Evidence Tracker](https://github.com/alianisreyesr/csv-evidence-tracker)** | Requirements traceability, IQ/OQ/PQ test execution, audit trail | ✅ Active |
+| **[GxP Change Control](https://github.com/alianisreyesr/gxp-change-control)** | Controlled change lifecycle & approvals | ✅ Active |
 | **[Data Integrity Case File](https://github.com/alianisreyesr/data-integrity-case-file)** | ALCOA+ investigation, CAPA readiness, local AI triage | ✅ Active |
-| **[GxP Change Control](https://github.com/alianisreyesr/gxp-change-control)** | Controlled change lifecycle & approvals | ✅ Active · 68 tests |
 | **[CSA Assurance Planner](https://github.com/alianisreyesr/csa-assurance-planner)** | Risk-based software assurance planning, FDA CSA alignment | ✅ Active |
+| **[AI Security Analyst](https://github.com/alianisreyesr/ai-security-analyst)** | Deterministic log detection, MITRE ATT&CK mapping, bounded AI summaries | ✅ Active |
+| **[Service Operations Command Center](https://github.com/alianisreyesr/service-operations-command-center)** | Incident intake, SLA targets, controlled transitions, audit events | ✅ Active |
+| **[Retail Operations Data Platform](https://github.com/alianisreyesr/retail-operations-data-platform)** | DuckDB analytics pipeline with tested quality gates | ✅ Active |
+| **[AI Document Intelligence Evaluator](https://github.com/alianisreyesr/ai-document-intelligence-evaluator)** | RAG and AI evaluation: citations, recall@k, groundedness | ✅ Active |
 
 ---
 
