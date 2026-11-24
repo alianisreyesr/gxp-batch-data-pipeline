@@ -226,7 +226,7 @@ A production implementation would additionally require authentication, electroni
 
 <div align="center">
 
-**Built by [Alianis Reyes-Reyes](https://www.linkedin.com/in/alianis-reyes-reyes/)**
+**Built by [Alianis Reyes Reyes](https://www.linkedin.com/in/alianis-reyes-reyes/)**
 
 Information Systems @ UPRM · Eli Lilly Tech@Lilly Alumni
 
