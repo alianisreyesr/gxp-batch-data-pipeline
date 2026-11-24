@@ -228,7 +228,7 @@ A production implementation would additionally require authentication, electroni
 
 **Built by [Alianis Reyes Reyes](https://www.linkedin.com/in/alianis-reyes-reyes/)**
 
-Information Systems @ UPRM · Eli Lilly Tech@Lilly Alumni
+Information Systems @ UPRM
 
 *Traceability is not a feature — it's the foundation.*
 
