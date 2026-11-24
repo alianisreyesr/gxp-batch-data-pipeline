@@ -11,7 +11,7 @@
 
 **GxP · Batch Data Pipeline · DuckDB · dbt · ALCOA+**
 
-*Portfolio-safe pharmaceutical batch manufacturing data pipeline — synthetic data only.*
+*Pharmaceutical batch telemetry pipeline with SQL quality gates, OOS evidence and dbt tests — synthetic data only.*
 
 [Run evidence](#run-evidence) · [Run evidence preview](#run-evidence-preview) · [Evidence verification](#evidence-verification) · [One-command pipeline](#one-command-pipeline) · [Case study](docs/CASE_STUDY.md) · [Data contract](docs/DATA_CONTRACT.md) · [Controls](#implemented-controls) · [Contributing](CONTRIBUTING.md) · [Security](SECURITY.md)
 
@@ -226,9 +226,9 @@ A production implementation would additionally require authentication, electroni
 
 <div align="center">
 
-**Built by [Alianis Reyes-Reyes](https://www.linkedin.com/in/alianis-reyes-reyes/)**
+**Built by [Alianis Reyes Reyes](https://www.linkedin.com/in/alianis-reyes-reyes/)**
 
-Information Systems @ UPRM · Eli Lilly Tech@Lilly Alumni
+Information Systems @ UPRM
 
 *Traceability is not a feature — it's the foundation.*
 
